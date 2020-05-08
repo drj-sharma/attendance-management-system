@@ -63,7 +63,7 @@ class DatabaseHelper {
   // retrieve data
 Future<List<StudentInterface>> getStudents() async {
     final db = await database;
-    var students = await db.rawQuery('SELECT * FROM $tableName');
+    var students = await db.rawQuery('SELECT * FROM $tableName ORDER BY $rollNo');
     List<StudentInterface> studentList = List<StudentInterface>();
     students.forEach((currentStudent) {
       StudentInterface student = StudentInterface.fromMap(currentStudent);

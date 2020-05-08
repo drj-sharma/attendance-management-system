@@ -26,12 +26,15 @@ class AddListOfStudents extends StatefulWidget {
 }
 
 class _AddListOfStudentsState extends State<AddListOfStudents> {
+
+  Future _getStudentsData() {
+    return DatabaseHelper().getStudents();
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    dynamic res = DatabaseHelper().getStudents();
-    print(res);
+    _getStudentsData();
   }
   @override
   Widget build(BuildContext context) {
@@ -50,8 +53,25 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
           ],
         ),
       ),
-      body: Text('fd'
-      ),
+      body: Container(
+        child: FutureBuilder(
+          future: _getStudentsData(),
+          // ignore: missing_return
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.data == null) {
+              return Text('ds');
+            } else {
+              return ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Center(
+                      child: Text(snapshot.data[index].name),
+                    );
+              });
+            }
+          },
+        ),
+      )
     );
   }
 }
@@ -76,7 +96,7 @@ class _AddStudentsInfoListState extends State<AddStudentsInfoList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[200],
-        title: Text('Student Info', style: TextStyle(color:Colors.blue[900], fontWeight: FontWeight.bold),),
+        title: Text('Student Info', style: TextStyle(color:Colors.blue[900], fontWeight: FontWeight.bold,),),
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
@@ -131,5 +151,3 @@ class _AddStudentsInfoListState extends State<AddStudentsInfoList> {
     );
   }
 }
-
-
