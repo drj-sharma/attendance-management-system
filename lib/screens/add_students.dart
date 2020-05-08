@@ -49,16 +49,12 @@ class AddStudentsInfoList extends StatefulWidget {
 
 class _AddStudentsInfoListState extends State<AddStudentsInfoList> {
   final myController = TextEditingController();
-
   String val = '';
-
   bool vis = false;
-
   void showToast() {
     setState(() {
       vis = !vis;
     });
-
   }
 
   @override
