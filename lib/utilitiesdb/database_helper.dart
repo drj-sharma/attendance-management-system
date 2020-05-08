@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'dart:io';
@@ -45,13 +46,6 @@ class DatabaseHelper {
   }
 
 
-  // get all object from db
-  Future<List<Map<String, dynamic>>> getStudentsMapList() async {
-    Database db = await this.database;
-    var result = await db.rawQuery('SELECT * FROM $tableName');
-    return result;
-  }
-
   // insert op
   Future<int> insertStudent(StudentInterface student) async {
     Database db = await this.database;
@@ -66,6 +60,19 @@ class DatabaseHelper {
 //    Database db = await this.database;
 //
 //  }
+  // retrieve data
+Future<List<StudentInterface>> getStudents() async {
+    final db = await database;
+    var students = await db.rawQuery('SELECT * FROM $tableName');
+    List<StudentInterface> studentList = List<StudentInterface>();
+    students.forEach((currentStudent) {
+      StudentInterface student = StudentInterface.fromMap(currentStudent);
+      studentList.add(student);
+    });
+  print('ds');
+  print(students);
+    return studentList;
+}
 
 
 

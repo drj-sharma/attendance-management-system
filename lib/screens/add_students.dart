@@ -1,4 +1,5 @@
 import 'package:attendencemanagementsystem/screens/add_students_list.dart';
+import 'package:attendencemanagementsystem/utilitiesdb/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class AddStudents extends StatelessWidget {
@@ -19,7 +20,19 @@ class AddStudents extends StatelessWidget {
   }
 }
 
-class AddListOfStudents extends StatelessWidget {
+class AddListOfStudents extends StatefulWidget {
+  @override
+  _AddListOfStudentsState createState() => _AddListOfStudentsState();
+}
+
+class _AddListOfStudentsState extends State<AddListOfStudents> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dynamic res = DatabaseHelper().getStudents();
+    print(res);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,9 +47,10 @@ class AddListOfStudents extends StatelessWidget {
             }, icon: Icon(Icons.add),),IconButton(onPressed: () {
 
             }, icon: Icon(Icons.account_circle),),
-
           ],
         ),
+      ),
+      body: Text('fd'
       ),
     );
   }

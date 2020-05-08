@@ -1,5 +1,4 @@
 import 'package:attendencemanagementsystem/utilitiesdb/database_helper.dart';
-import 'package:flutter/cupertino.dart';
 
 class StudentInterface {
   String name;
@@ -18,5 +17,6 @@ class StudentInterface {
   StudentInterface.fromMap(Map<String , dynamic> map) {
     rollNo = map[DatabaseHelper.rollNo];
     name = map[DatabaseHelper.name];
+    print(name);
   }
 }
