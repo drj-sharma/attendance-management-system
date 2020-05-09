@@ -12,8 +12,10 @@ class AddStudentsListToTheCourse extends StatefulWidget {
 class _AddStudentsListToTheCourseState extends State<AddStudentsListToTheCourse> {
   String contactNumber;
   String pin;
+  bool visSuccess = false;
   String _name;
   int _rollno;
+  String rNo = '';
   TextEditingController nameController = new TextEditingController();
   var rollnoController = new TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -54,11 +56,27 @@ class _AddStudentsListToTheCourseState extends State<AddStudentsListToTheCourse>
                   name: nameController.text,
                   rollNo: int.parse(rollnoController.text)
                 );
-                DatabaseHelper().insertStudent(student);
-              print(student.rollNo);
-                
+                DatabaseHelper().insertStudent(student).then((val) {
+                  if (val.toString() == '404') {
+                    setState(() {
+                      this.visSuccess = true;
+                      rNo = 'Failed to insert, Maybe Unique constraint failed';
+                    });
+                  } else {
+                    print(student.rollNo);
+                    setState(() {
+                      this.visSuccess = true;
+                      rNo = 'Successfully added ' + student.rollNo.toString();
+                    });
+                  }
+                });
+
               }, icon: Icon(Icons.navigate_next, color: Colors.blue[900],), label: Text('Submit', style: TextStyle(color: Colors.blue[900]),)),
               SizedBox(height: 30.0,),
+              Visibility(
+                visible: visSuccess,
+                child: Text('$rNo', style: TextStyle(color: Colors.green),)
+              )
             ],
           ),
       ),

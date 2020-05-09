@@ -20,3 +20,24 @@ class StudentInterface {
     print(name);
   }
 }
+
+class AttendenceInterface {
+  int attendence;
+  int rollNo;
+  AttendenceInterface({this.rollNo, this.attendence});
+
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      DatabaseHelper.attendence: attendence,
+      DatabaseHelper.rollNo: rollNo,
+    };
+    return map;
+  }
+
+  AttendenceInterface.fromMap(Map<String , dynamic> map) {
+    rollNo = map[DatabaseHelper.rollNo];
+    attendence = map[DatabaseHelper.attendence];
+    print(attendence);
+  }
+}

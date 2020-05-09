@@ -1,6 +1,8 @@
+import 'package:attendencemanagementsystem/models/student_interface.dart';
 import 'package:attendencemanagementsystem/screens/add_students_list.dart';
 import 'package:attendencemanagementsystem/utilitiesdb/database_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 
 class AddStudents extends StatelessWidget {
   @override
@@ -10,7 +12,7 @@ class AddStudents extends StatelessWidget {
         backgroundColor: Colors.blue[100],
         title: Center(
           child: Text(
-            'Add Students',
+            'Attendence',
             style: TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold),
           ),
         ),
@@ -27,8 +29,9 @@ class AddListOfStudents extends StatefulWidget {
 
 class _AddListOfStudentsState extends State<AddListOfStudents> {
 
-  Future _getStudentsData() {
-    return DatabaseHelper().getStudents();
+  Future _getStudentsData() async {
+    return await DatabaseHelper().getStudents();
+
   }
   @override
   void initState() {
@@ -36,6 +39,8 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
     super.initState();
     _getStudentsData();
   }
+  int present = 0;
+  int rollNo = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,13 +48,17 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            IconButton(onPressed: () {}, icon: Icon(Icons.settings),),
-
             IconButton(onPressed: () {
               return Navigator.push(context, MaterialPageRoute(builder: (context) => AddStudentsInfoList()));
             }, icon: Icon(Icons.add),),IconButton(onPressed: () {
 
             }, icon: Icon(Icons.account_circle),),
+            IconButton(
+              icon: Icon(Icons.remove_red_eye),
+                onPressed: () {
+                  return Navigator.push(context, MaterialPageRoute(builder: (context) => AttendedStudentClass()));
+                },
+            )
           ],
         ),
       ),
@@ -59,13 +68,80 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
           // ignore: missing_return
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.data == null) {
-              return Text('ds');
+              return Text('Please Insert Students from the '+' button' );
             } else {
               return ListView.builder(
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Center(
-                      child: Text(snapshot.data[index].name),
+//                      child: Text(snapshot.data[index].rollNo.toString()),
+                    child: ExpansionTile(
+                      title: Center(child: Text(snapshot.data[index].rollNo.toString())),
+                      subtitle: Center(child: Text(snapshot.data[index].name)),
+                      leading: Icon(Icons.power_input),
+                      backgroundColor: Colors.white,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            FlatButton(
+                              splashColor: Colors.blue[200],
+                              color: Colors.green[400],
+                              child: Text('Present', style: TextStyle(color: Colors.white),),
+                              onPressed: () {
+                                setState(() {
+                                  this.present = 1;
+                                  print(this.present);
+                                });
+
+                                AttendenceInterface attendence = AttendenceInterface(
+                                    rollNo: snapshot.data[index].rollNo,
+                                    attendence: present
+                                );
+                                DatabaseHelper().insertAttendence(attendence).then((val) {
+                                  if (val.toString() != '404') {
+                                  }
+//                                  else {
+//                                    print(student.rollNo);
+//                                    setState(() {
+//                                      rNo = 'Successfully added ' + student.rollNo.toString();
+//                                    });
+//                                  }
+                                });
+
+                              },
+                            ),
+                            FlatButton(
+                              splashColor: Colors.blue[200],
+                              color: Colors.red[400],
+                              child: Text('Absent', style: TextStyle(color: Colors.white),),
+                              onPressed: () {
+                                setState(() {
+                                  this.present = 0;
+                                  print(this.present);
+                                });
+
+                                AttendenceInterface attendence = AttendenceInterface(
+                                    rollNo: snapshot.data[index].rollNo,
+                                    attendence: present
+                                );
+                                DatabaseHelper().insertAttendence(attendence).then((val) {
+                                  if (val.toString() != '404') {
+                                  }
+//                                  else {
+//                                    print(student.rollNo);
+//                                    setState(() {
+//                                      rNo = 'Successfully added ' + student.rollNo.toString();
+//                                    });
+//                                  }
+                                });
+
+                              },
+                            )
+                          ],
+                        )
+                      ],
+                    ),
                     );
               });
             }
@@ -96,7 +172,7 @@ class _AddStudentsInfoListState extends State<AddStudentsInfoList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[200],
-        title: Text('Student Info', style: TextStyle(color:Colors.blue[900], fontWeight: FontWeight.bold,),),
+        title: Text('COURSE INFO', style: TextStyle(color:Colors.blue[900], fontWeight: FontWeight.bold,),),
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
@@ -139,6 +215,8 @@ class _AddStudentsInfoListState extends State<AddStudentsInfoList> {
               ),),
                   SizedBox(height: 30.0,),
                   FlatButton.icon(color: Colors.blue[500], onPressed: () {
+                    var cr = DatabaseHelper()..createDBb();
+                    print(cr);
                     Navigator.push(context, MaterialPageRoute(builder: (context) => AddStudentsListToTheCourse(courseName: val)));
                   }, icon: Icon(Icons.add_circle, color: Colors.white,), label: Text('Add Students', style: TextStyle(color: Colors.white),))
                 ],
@@ -148,6 +226,51 @@ class _AddStudentsInfoListState extends State<AddStudentsInfoList> {
           ],
         ),
       )
+    );
+  }
+}
+
+class AttendedStudentClass extends StatefulWidget {
+  @override
+  _AttendedStudentClassState createState() => _AttendedStudentClassState();
+}
+
+class _AttendedStudentClassState extends State<AttendedStudentClass> {
+
+  Future _getStudentsAttendence() async {
+    return await DatabaseHelper().getAttendence();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getStudentsAttendence();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[600],
+        title: Text('Presented Students'),
+      ),
+      body: Container(
+        child: FutureBuilder(
+          future: _getStudentsAttendence(),
+          // ignore: missing_return
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.data != null) {
+              return ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Text(snapshot.data[index].rollNo.toString());
+                  });
+            } else {
+              return Center(child: Text('Loading..'));
+            }
+          },
+        ),
+      ),
     );
   }
 }

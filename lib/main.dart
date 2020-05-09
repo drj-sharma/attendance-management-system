@@ -46,7 +46,7 @@ class _LoginAuthState extends State<LoginAuth> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Text('LOG IN', style: TextStyle(fontSize: 40.0, color: Colors.blue[900], fontWeight: FontWeight.bold),),
-                SizedBox(height: 100.0,),
+                SizedBox(height: 80.0,),
                 TextField(
                 obscureText: false,
                 cursorColor: Colors.blue[900],
