@@ -41,3 +41,29 @@ class AttendenceInterface {
     print(attendence);
   }
 }
+
+class TeacherInterface {
+  String name;
+  String email;
+  String favques;
+  String password;
+  TeacherInterface({this.name, this.email, this.favques, this.password});
+
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      DatabaseHelper.name: name,
+      DatabaseHelper.email: email,
+      DatabaseHelper.password: password,
+      DatabaseHelper.favques: favques
+    };
+    return map;
+  }
+
+  TeacherInterface.fromMap(Map<String , dynamic> map) {
+    name = map[DatabaseHelper.name];
+    email = map[DatabaseHelper.email];
+    password = map[password];
+    favques = map[favques];
+  }
+}

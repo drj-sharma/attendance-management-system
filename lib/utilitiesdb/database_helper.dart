@@ -14,6 +14,9 @@ class DatabaseHelper {
   static const String rollNo = 'rollNo';
   static const String name = 'name';
   static const String attendence = 'attendence';
+  static const String email = 'email';
+  static const String password = 'password';
+  static const String favques = 'favques';
 
   DatabaseHelper._createInstance(); // named constructor to create instance of DatabaseHelper
 
@@ -45,6 +48,7 @@ class DatabaseHelper {
     print('Database created');
     await db.execute('CREATE TABLE $tableName($rollNo INTEGER PRIMARY KEY, $name TEXT)');
     await db.execute('CREATE TABLE attendence($rollNo INTEGER PRIMARY KEY, $attendence INTEGER)');
+    await db.execute('CREATE TABLE teacher($email TEXT UNIQUE PRIMARY KEY NOT NULL, $name TEXT NOT NULL, $favques TEXT NOT NULL, $password TEXT NOT NULL)');
   }
   void createDBb() async {
     final db = await database;
@@ -72,7 +76,6 @@ class DatabaseHelper {
       print('result $result');
       return result;
     } catch (e) {
-      print ('error $e');
       result = 404;   // man made error return statement, lol
     }
     return result;
@@ -118,20 +121,61 @@ Future<List<StudentInterface>> getStudents() async {
   // retrieve data
   Future<List<AttendenceInterface>> getAttendence() async {
     final db = await database;
-    var attendences = await db.rawQuery('SELECT * FROM attendence ORDER BY $rollNo');
-    print(attendences);
-    List<AttendenceInterface> attendenceList = List<AttendenceInterface>();
-    attendences.forEach((currentAttendence) {
-      AttendenceInterface attendence = AttendenceInterface.fromMap(currentAttendence);
-      attendenceList.add(attendence);
-    });
-    print('ds');
-    print(attendences);
-    return attendenceList;
+    try {
+      var attendences = await db.rawQuery(
+          'SELECT * FROM attendence ORDER BY $rollNo');
+      print(attendences);
+      List<AttendenceInterface> attendenceList = List<AttendenceInterface>();
+      attendences.forEach((currentAttendence) {
+        AttendenceInterface attendence = AttendenceInterface.fromMap(
+            currentAttendence);
+        attendenceList.add(attendence);
+      });
+      print('ds');
+      print(attendences);
+      return attendenceList;
+    } catch (e) {
+      print(e);
+    }
   }
 
+//  void insertcolumn()
 // to get all tables list, same as show tables;
 //  SELECT name FROM sqlite_master WHERE type='table'"
+
+// teacher table ops
+  // insert op
+  Future<int> insertTeacher(TeacherInterface teacher) async {
+    Database db = await this.database;
+    var result;
+    try {
+      result = await db.insert('teacher', teacher.toMap());
+
+      print('--->');
+      print('result $result');
+      return result;
+    } catch (e) {
+      result = 404;   // man made error return statement, lol
+    }
+    return result;
+  }
+
+  Future<List<TeacherInterface>> getTeachers() async {
+    final db = await database;
+    var teacher = await db.rawQuery('SELECT * FROM teacher');
+    print(teacher);
+  }
+
+  Future<int> login(String uEmail, String uPassword) async {
+    final db = await database;
+    var res = await db.rawQuery("SELECT * FROM teacher WHERE $email='$uEmail'");
+    print(res);
+    if (res.length > 0) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 
 
 }

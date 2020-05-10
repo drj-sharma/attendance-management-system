@@ -2,7 +2,9 @@ import 'package:attendencemanagementsystem/models/student_interface.dart';
 import 'package:attendencemanagementsystem/screens/add_students_list.dart';
 import 'package:attendencemanagementsystem/utilitiesdb/database_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:intl/intl.dart';
 
 class AddStudents extends StatelessWidget {
   @override
@@ -41,6 +43,17 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
   }
   int present = 0;
   int rollNo = 0;
+  TimeOfDay now = TimeOfDay(hour: 9, minute: 00);
+  var formattedDate = new DateFormat.yMMMd().format(new DateTime.now());
+
+  TimeOfDay picked;
+  Future<Null> _showTimePicker(BuildContext context) async {
+    picked = await showTimePicker(context: context, initialTime: now);
+    setState(() {
+      now = picked;
+      print(formattedDate);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,80 +83,94 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
             if (snapshot.data == null) {
               return Text('Please Insert Students from the '+' button' );
             } else {
-              return ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Center(
+              return
+//                Container(
+//                child: Column(
+//                  children: <Widget>[
+//                    Center(
+//                      child: FlatButton.icon(
+//                        label: Text("Select Time"),
+//                        icon: Icon(Icons.input),
+//                        onPressed: () async {
+//                          await _showTimePicker(context);
+//                        },
+//                      ),
+//                    ),
+                    ListView.builder(
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Center(
 //                      child: Text(snapshot.data[index].rollNo.toString()),
-                    child: ExpansionTile(
-                      title: Center(child: Text(snapshot.data[index].rollNo.toString())),
-                      subtitle: Center(child: Text(snapshot.data[index].name)),
-                      leading: Icon(Icons.power_input),
-                      backgroundColor: Colors.white,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            FlatButton(
-                              splashColor: Colors.blue[200],
-                              color: Colors.green[400],
-                              child: Text('Present', style: TextStyle(color: Colors.white),),
-                              onPressed: () {
-                                setState(() {
-                                  this.present = 1;
-                                  print(this.present);
-                                });
+                          child: ExpansionTile(
+                            title: Center(child: Text(snapshot.data[index].rollNo.toString())),
+                            subtitle: Center(child: Text(snapshot.data[index].name)),
+                            leading: Icon(Icons.power_input),
+                            backgroundColor: Colors.white,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  FlatButton(
+                                    splashColor: Colors.blue[200],
+                                    color: Colors.green[400],
+                                    child: Text('Present', style: TextStyle(color: Colors.white),),
+                                    onPressed: () {
+                                      setState(() {
+                                        this.present = 1;
+                                        print(this.present);
+                                      });
 
-                                AttendenceInterface attendence = AttendenceInterface(
-                                    rollNo: snapshot.data[index].rollNo,
-                                    attendence: present
-                                );
-                                DatabaseHelper().insertAttendence(attendence).then((val) {
-                                  if (val.toString() != '404') {
-                                  }
+                                      AttendenceInterface attendence = AttendenceInterface(
+                                          rollNo: snapshot.data[index].rollNo,
+                                          attendence: present
+                                      );
+                                      DatabaseHelper().insertAttendence(attendence).then((val) {
+                                        if (val.toString() != '404') {
+                                        }
 //                                  else {
 //                                    print(student.rollNo);
 //                                    setState(() {
 //                                      rNo = 'Successfully added ' + student.rollNo.toString();
 //                                    });
 //                                  }
-                                });
+                                      });
 
-                              },
-                            ),
-                            FlatButton(
-                              splashColor: Colors.blue[200],
-                              color: Colors.red[400],
-                              child: Text('Absent', style: TextStyle(color: Colors.white),),
-                              onPressed: () {
-                                setState(() {
-                                  this.present = 0;
-                                  print(this.present);
-                                });
+                                    },
+                                  ),
+                                  FlatButton(
+                                    splashColor: Colors.blue[200],
+                                    color: Colors.red[400],
+                                    child: Text('Absent', style: TextStyle(color: Colors.white),),
+                                    onPressed: () {
+                                      setState(() {
+                                        this.present = 0;
+                                        print(this.present);
+                                      });
 
-                                AttendenceInterface attendence = AttendenceInterface(
-                                    rollNo: snapshot.data[index].rollNo,
-                                    attendence: present
-                                );
-                                DatabaseHelper().insertAttendence(attendence).then((val) {
-                                  if (val.toString() != '404') {
-                                  }
+                                      AttendenceInterface attendence = AttendenceInterface(
+                                          rollNo: snapshot.data[index].rollNo,
+                                          attendence: present
+                                      );
+                                      DatabaseHelper().insertAttendence(attendence).then((val) {
+                                        if (val.toString() != '404') {
+                                        }
 //                                  else {
 //                                    print(student.rollNo);
 //                                    setState(() {
 //                                      rNo = 'Successfully added ' + student.rollNo.toString();
 //                                    });
 //                                  }
-                                });
+                                      });
 
-                              },
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    );
-              });
+                                    },
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                          );
+                    });
+
             }
           },
         ),
@@ -151,6 +178,7 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
     );
   }
 }
+
 
 class AddStudentsInfoList extends StatefulWidget {
   @override
@@ -252,7 +280,7 @@ class _AttendedStudentClassState extends State<AttendedStudentClass> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[600],
-        title: Text('Presented Students'),
+        title: Text('Attendence Log'),
       ),
       body: Container(
         child: FutureBuilder(
@@ -263,7 +291,14 @@ class _AttendedStudentClassState extends State<AttendedStudentClass> {
               return ListView.builder(
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Text(snapshot.data[index].rollNo.toString());
+                    return Container(
+                      child: Column(
+                        children: <Widget>[
+                          Text(snapshot.data[index].rollNo.toString()),
+                          Text(snapshot.data[index].attendence.toString())
+                        ],
+                      ),
+                    );
                   });
             } else {
               return Center(child: Text('Loading..'));
