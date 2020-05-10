@@ -18,7 +18,6 @@ class _AddStudentsListToTheCourseState extends State<AddStudentsListToTheCourse>
   String rNo = '';
   TextEditingController nameController = new TextEditingController();
   var rollnoController = new TextEditingController();
-  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,7 +28,6 @@ class _AddStudentsListToTheCourseState extends State<AddStudentsListToTheCourse>
         ),
         body: SingleChildScrollView(
           child: Form(
-            key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -56,7 +54,7 @@ class _AddStudentsListToTheCourseState extends State<AddStudentsListToTheCourse>
                   name: nameController.text,
                   rollNo: int.parse(rollnoController.text)
                 );
-                DatabaseHelper().insertStudent(student).then((val) {
+                DatabaseHelper().insertStudent(student, rollnoController.text).then((val) {
                   if (val.toString() == '404') {
                     setState(() {
                       this.visSuccess = true;

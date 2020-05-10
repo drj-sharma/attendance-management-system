@@ -47,7 +47,7 @@ class DatabaseHelper {
   void _createDb(Database db, int newVersion) async {
     print('Database created');
     await db.execute('CREATE TABLE $tableName($rollNo INTEGER PRIMARY KEY, $name TEXT)');
-    await db.execute('CREATE TABLE attendence($rollNo INTEGER PRIMARY KEY, $attendence INTEGER)');
+    await db.execute('CREATE TABLE attendence($rollNo INTEGER PRIMARY KEY)');
     await db.execute('CREATE TABLE teacher($email TEXT UNIQUE PRIMARY KEY NOT NULL, $name TEXT NOT NULL, $favques TEXT NOT NULL, $password TEXT NOT NULL)');
   }
   void createDBb() async {
@@ -66,27 +66,31 @@ class DatabaseHelper {
 
 
   // insert op
-  Future<int> insertStudent(StudentInterface student) async {
+  Future<int> insertStudent(StudentInterface student, String rollno) async {
     Database db = await this.database;
-    var result;
+    var result, result2;
     try {
+      int newrollno = int.parse(rollno);
       result = await db.insert(tableName, student.toMap());
-
+      result2 = await db.rawQuery('INSERT INTO attendence(rollNo) VALUES($newrollno);');
+      print(result2);
       print('--->');
       print('result $result');
       return result;
     } catch (e) {
       result = 404;   // man made error return statement, lol
+      print(e);
     }
     return result;
   }
 
   // insert op
-  Future<int> insertAttendence(AttendenceInterface attendence) async {
+  Future<int> insertAndUpdateAttendence(AttendenceInterface attendence, String columnName) async {
     Database db = await this.database;
     var result;
     try {
-      result = await db.insert('attendence', attendence.toMap());
+      String columnName2 = '`$columnName`';
+      result = await db.rawQuery("UPDATE attendence SET $columnName2 = ${attendence.attendence} WHERE $rollNo = ${attendence.rollNo};");
       print('--->');
       print('result $result');
       return result;
@@ -119,21 +123,13 @@ Future<List<StudentInterface>> getStudents() async {
 
 
   // retrieve data
-  Future<List<AttendenceInterface>> getAttendence() async {
+  Future<List<Map<String, dynamic>>> getAttendence() async {
     final db = await database;
     try {
-      var attendences = await db.rawQuery(
-          'SELECT * FROM attendence ORDER BY $rollNo');
+      List<Map<String, dynamic>> attendences = await db.rawQuery('SELECT name FROM PRAGMA_TABLE_INFO("attendence") ORDER BY name DESC;');
       print(attendences);
-      List<AttendenceInterface> attendenceList = List<AttendenceInterface>();
-      attendences.forEach((currentAttendence) {
-        AttendenceInterface attendence = AttendenceInterface.fromMap(
-            currentAttendence);
-        attendenceList.add(attendence);
-      });
-      print('ds');
-      print(attendences);
-      return attendenceList;
+
+      return attendences;
     } catch (e) {
       print(e);
     }
@@ -142,6 +138,9 @@ Future<List<StudentInterface>> getStudents() async {
 //  void insertcolumn()
 // to get all tables list, same as show tables;
 //  SELECT name FROM sqlite_master WHERE type='table'"
+
+  // to get all columns
+// 'SELECT name FROM PRAGMA_TABLE_INFO("teacher");'
 
 // teacher table ops
   // insert op
@@ -176,6 +175,31 @@ Future<List<StudentInterface>> getStudents() async {
       return 0;
     }
   }
+  
+  Future<dynamic> addNewColumn(String columnName) async {
+    try {
+      final db = await database;
+      columnName = '`$columnName`';
+      var res = await db.rawQuery("ALTER TABLE attendence ADD COLUMN $columnName");
+      print('ad');
+      print(res);
+      return res;
+    }
+   catch (e) {
+     print(e);
+   }
+  }
 
-
+  Future<List<Map<String, dynamic>>> getStudentsAttendenceByLectureTime(String colName) async {
+    try {
+      print("-->$colName");
+      final db = await database;
+      var colName2 = '`$colName`';
+      var res = await db.rawQuery("SELECT $rollNo, $colName2 as atn from attendence ORDER BY $rollNo;");
+      print("list->$res");
+      return res;
+    } catch (e) {
+      print(e);
+    }
+  }
 }

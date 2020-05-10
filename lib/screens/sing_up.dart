@@ -107,7 +107,7 @@ bool isValid = false;
                 },
                     icon: Icon(Icons.tag_faces, color: Colors.blue,),
                     label: Text(
-                      'Sign Up', style: TextStyle(color: Colors.blue),)),
+                      'Sign Up', style: TextStyle(color: Colors.blue),),splashColor: Colors.blue[200]),
                 SizedBox(height: 10.0,),
                 Visibility(
                   visible: isValid,
@@ -126,7 +126,7 @@ bool isValid = false;
                   icon: Icon(Icons.navigate_next, color: Colors.blue),
                   label: Text('Log In', style: TextStyle(
                       color: Colors.blue[400]
-                  )),
+                  )), splashColor: Colors.blue[200]
                 )
               ],
             ),

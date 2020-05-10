@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
       home: LoginAuth(),
       routes: {
         '/login': (context) => LoginAuth(),
-        '/addstudents': (context) => AddStudents()
+//        '/addstudents': (context) => AddStudents()
+      '/clock': (context) => ClockAdd()
       },
     );
   }
@@ -99,15 +100,15 @@ class _LoginAuthState extends State<LoginAuth> {
                     int val = await DatabaseHelper().login(emailController.text.toLowerCase(), passwordController.text.toLowerCase());
                      if (val == 0) {
                        print('failed');
-                       setState(() {
+                setState(() {
                          canVis = true;
                        });
                      } else if (val == 1){
                        print('success');
-                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AddStudents()));
+                       Navigator.pushReplacementNamed(context, '/clock');
                      }
 
-                  }, icon: Icon(Icons.tag_faces, color: Colors.blue,), label: Text('Log In', style: TextStyle(color: Colors.blue),)),
+                  }, icon: Icon(Icons.tag_faces, color: Colors.blue,), label: Text('Log In', style: TextStyle(color: Colors.blue[200]),), splashColor: Colors.blue,),
                   SizedBox(height: 10.0,),
                   Visibility(
                     visible: canVis,
@@ -119,7 +120,7 @@ class _LoginAuthState extends State<LoginAuth> {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
                     }, icon: Icon(Icons.navigate_next, color: Colors.blue), label: Text('Sign Up', style: TextStyle(
                     color: Colors.blue
-                  )),
+                  )), splashColor: Colors.blue[200]
                   )
                 ],
               ),
