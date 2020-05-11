@@ -22,13 +22,15 @@ class _ClockAddState extends State<ClockAdd> {
   Future<Null> _showTimePicker(BuildContext context) async {
     picked = await showTimePicker(context: context, initialTime: now);
     setState(() {
-      now = picked;
       newColumn = formattedDate + "-" + picked.toString();
       print(newColumn);
     });
   }
 
   Future addColumn(String columnName) async {
+    if (columnName.contains('null')) {
+      return;
+    }
     await DatabaseHelper().addNewColumn(columnName);
   }
 
@@ -269,12 +271,12 @@ class _AddStudentsInfoListState extends State<AddStudentsInfoList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[200],
-        title: Text('COURSE INFO', style: TextStyle(color:Colors.blue[900], fontWeight: FontWeight.bold,),),
+        title: Text('Course Info  ', style: TextStyle(color:Colors.blue[900], fontWeight: FontWeight.bold,),),
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+        padding: const EdgeInsets.fromLTRB(20.0, 80.0, 20.0, 0.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Text('Enter Course Name with Semester',
             style: TextStyle(
@@ -336,7 +338,8 @@ class AttendedStudentClass extends StatefulWidget {
 class _AttendedStudentClassState extends State<AttendedStudentClass> {
 
   Future<List<Map<String, dynamic>>> _getStudentsAttendence() async {
-    return await DatabaseHelper().getAttendence();
+    var res = await DatabaseHelper().getAttendence();
+    return res;
   }
 
   @override
@@ -356,6 +359,7 @@ class _AttendedStudentClassState extends State<AttendedStudentClass> {
         child: FutureBuilder(
           initialData: [],
           future: _getStudentsAttendence(),
+
           // ignore: missing_return
           builder: (BuildContext context, AsyncSnapshot snapshot) {
               return ListView.builder(
@@ -371,6 +375,7 @@ class _AttendedStudentClassState extends State<AttendedStudentClass> {
                             contentPadding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 30.0),
                             trailing: Icon(Icons.navigate_next),
                             onTap: () async {
+                              print(snapshot.data[index]['name'].toString());
                               List<Map<String, dynamic>> value = await DatabaseHelper().getStudentsAttendenceByLectureTime(snapshot.data[index]['name'].toString());
                               print("test $value");
                               Navigator.push(context, MaterialPageRoute(builder: (context) => ShowAttendence(students: value)));
@@ -387,8 +392,7 @@ class _AttendedStudentClassState extends State<AttendedStudentClass> {
 //                      ),
 //                    );
                   });
-
-          },
+  },
         ),
       ),
     );
@@ -416,11 +420,15 @@ class _ShowAttendenceState extends State<ShowAttendence> {
 //    return Text(widget.students[0]['rollNo'].toString());
     return Scaffold(
       appBar: AppBar(
-        title: Text('Attendence Log'),
+        title: Text("Attendence"),
         backgroundColor: Colors.blueGrey,
       ),
-      body: ListView.builder(
-        // Let the ListView know how many items it needs to build.
+      body: widget.students.isEmpty ? Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: Center(child: Text('Go to Attendence page and give attendence to the student list then this page appears a list of present/absent student')),
+      ) :
+    ListView.builder(
+      // Let the ListView know how many items it needs to build.
         itemCount: widget.students.length,
         // Provide a builder function. This is where the magic happens.
         // Convert each item into a widget based on the type of item it is.
@@ -429,9 +437,9 @@ class _ShowAttendenceState extends State<ShowAttendence> {
           return Column(
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.perm_identity),
+                leading: Icon(Icons.perm_identity, color: Colors.blueGrey,),
               title: Text(item["rollNo"].toString()),
-//              subtitle: _status(item["atn"].toString()),
+              subtitle: Text(item["name"].toString()),
                 trailing: _status(item["atn"].toString()),
               )
             ],
@@ -446,9 +454,9 @@ class _ShowAttendenceState extends State<ShowAttendence> {
 Widget _status(status) {
   if (status == "0") {
     return Text('Absent', style: TextStyle(color: Colors.red),);
-  } else if(status == null) {
+  } else if(status == "null") {
     return Text('Absent', style: TextStyle(color: Colors.red),);
-  } else {
+  } else if (status == '1'){
     return Text("Present", style: TextStyle(color: Colors.green),);
   }
 }

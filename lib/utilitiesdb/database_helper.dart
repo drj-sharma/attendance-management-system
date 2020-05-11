@@ -47,7 +47,7 @@ class DatabaseHelper {
   void _createDb(Database db, int newVersion) async {
     print('Database created');
     await db.execute('CREATE TABLE $tableName($rollNo INTEGER PRIMARY KEY, $name TEXT)');
-    await db.execute('CREATE TABLE attendence($rollNo INTEGER PRIMARY KEY), attendence TEXT');
+    await db.execute('CREATE TABLE attendence($rollNo INTEGER PRIMARY KEY)');
     await db.execute('CREATE TABLE teacher($email TEXT UNIQUE PRIMARY KEY NOT NULL, $name TEXT NOT NULL, $favques TEXT NOT NULL, $password TEXT NOT NULL)');
   }
   void createDBb() async {
@@ -200,7 +200,7 @@ Future<List<StudentInterface>> getStudents() async {
       final db = await database;
       var colName2 = '`$colName`';
 //      var res = await db.rawQuery("SELECT $rollNo, $colName2 as atn from attendence ORDER BY $rollNo;");
-      var res = await db.rawQuery("select Students.name,  attendence.rollNo, attendence.$colName2 as atn from Students left join attendence using(rollNo) ORDER BY Students.rollNo asc;");
+      var res = await db.rawQuery("select Students.name as name,  attendence.rollNo as rollNo, attendence.$colName2 as atn from Students left join attendence using(rollNo) ORDER BY Students.rollNo asc;");
       print("list->$res");
       return res;
     } catch (e) {
