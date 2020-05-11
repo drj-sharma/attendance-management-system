@@ -68,7 +68,8 @@ class _AddStudentsListToTheCourseState extends State<AddStudentsListToTheCourse>
                     });
                   }
                 });
-
+                nameController.clear();
+                rollnoController.clear();
               }, icon: Icon(Icons.navigate_next, color: Colors.blue[900],), label: Text('Submit', style: TextStyle(color: Colors.blue[900]),)),
               SizedBox(height: 30.0,),
               Visibility(

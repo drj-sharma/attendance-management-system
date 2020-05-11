@@ -107,8 +107,9 @@ class _LoginAuthState extends State<LoginAuth> {
                        print('success');
                        Navigator.pushReplacementNamed(context, '/clock');
                      }
-
-                  }, icon: Icon(Icons.tag_faces, color: Colors.blue,), label: Text('Log In', style: TextStyle(color: Colors.blue[200]),), splashColor: Colors.blue,),
+                    emailController.clear();
+                    passwordController.clear();
+                  }, icon: Icon(Icons.tag_faces, color: Colors.blue,), label: Text('Log In', style: TextStyle(color: Colors.blue),), splashColor: Colors.blue,),
                   SizedBox(height: 10.0,),
                   Visibility(
                     visible: canVis,

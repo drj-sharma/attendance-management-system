@@ -104,6 +104,10 @@ bool isValid = false;
                       isValid = false;
                     });
                   }
+                  nameController.clear();
+                  emailController.clear();
+                  passwordController.clear();
+                  favquesController.clear();
                 },
                     icon: Icon(Icons.tag_faces, color: Colors.blue,),
                     label: Text(

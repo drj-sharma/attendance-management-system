@@ -139,6 +139,8 @@ Future<List<StudentInterface>> getStudents() async {
     }
   }
 
+
+
 //  void insertcolumn()
 // to get all tables list, same as show tables;
 //  SELECT name FROM sqlite_master WHERE type='table'"
@@ -184,7 +186,7 @@ Future<List<StudentInterface>> getStudents() async {
     try {
       final db = await database;
       columnName = '`$columnName`';
-      var res = await db.rawQuery("ALTER TABLE attendence ADD COLUMN $columnName");
+      var res = await db.rawQuery("ALTER TABLE attendence ADD COLUMN $columnName INTEGER DEFAULT (0)");
       print('ad');
       print(res);
       return res;
@@ -203,6 +205,64 @@ Future<List<StudentInterface>> getStudents() async {
       var res = await db.rawQuery("select Students.name as name,  attendence.rollNo as rollNo, attendence.$colName2 as atn from Students left join attendence using(rollNo) ORDER BY Students.rollNo asc;");
       print("list->$res");
       return res;
+    } catch (e) {
+      print(e);
+    }
+  }
+  // retrieve data
+  Future<List<Map<String, dynamic>>> getRollNo() async {
+    final db = await database;
+    try {
+      List<Map<String, dynamic>> attendences = await db.rawQuery('select Students.name as name,  attendence.rollNo as rollNo from Students left join attendence using(rollNo) ORDER BY Students.rollNo asc;"');
+      print(attendences);
+
+      return attendences;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+// attendence-report
+  Future<List<Map<String, dynamic>>> getReportTillNow(String rollno) async {
+    try {
+      final db = await database;
+//      var res = await db.rawQuery("SELECT $rollNo, $colName2 as atn from attendence ORDER BY $rollNo;");
+      var res = await db.rawQuery(
+          'SELECT COUNT(name) as count FROM PRAGMA_TABLE_INFO("attendence") WHERE name <> "rollNo";');
+      var res3 = await db.rawQuery(
+          'SELECT name FROM PRAGMA_TABLE_INFO("attendence") WHERE name <> "rollNo" ORDER BY name DESC;');
+      StringBuffer values = new StringBuffer();
+      StringBuffer values2 = new StringBuffer();
+      var resval;
+      res3.forEach((item) {
+        item.forEach((k, v) {
+          print(v);
+          resval = '$v';
+          values2.write('`$v`');
+          values2.write(',');   // added inbuild like ',' sign
+          values.write('`$v`');
+          values.write('+');    // added inbuild like '+' sign lmao to sum
+        });
+      });
+
+      int vallen = values.length;
+      int vallen2 = values2.length;
+      print(vallen);
+      String newValues = values.toString().substring(0, vallen-1);
+      String newValues2 = values.toString().substring(0, vallen2-1);
+      print('-----');
+      print(newValues.length);
+
+
+      print ("values--> $values");
+      var res2 = await db.rawQuery('SELECT $newValues as "Total" FROM attendence where rollNo=$rollno;');
+
+      print(res);
+      print("RES3 $res3");
+      print("columns--> $res2");
+//      var value = int.parse(res[0]["count"])/int.parse(res2[0]["Total"]);
+      List<Map<String, dynamic>> result = res + res2;
+      return result;
     } catch (e) {
       print(e);
     }

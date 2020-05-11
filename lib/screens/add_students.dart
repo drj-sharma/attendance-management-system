@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:attendencemanagementsystem/attendence_report/show_rollno.dart';
 import 'package:attendencemanagementsystem/models/student_interface.dart';
 import 'package:attendencemanagementsystem/screens/add_students_list.dart';
 import 'package:attendencemanagementsystem/utilitiesdb/database_helper.dart';
@@ -14,6 +17,7 @@ class ClockAdd extends StatefulWidget {
 
 class _ClockAddState extends State<ClockAdd> {
   TimeOfDay now = TimeOfDay(hour: 9, minute: 00);
+  bool canVis = false;
 
   var formattedDate = new DateFormat.yMMMMd().format(new DateTime.now());
   TimeOfDay picked;
@@ -25,12 +29,15 @@ class _ClockAddState extends State<ClockAdd> {
       newColumn = formattedDate + "-" + picked.toString();
       print(newColumn);
     });
+    if (newColumn.contains('null')) {
+      return;
+    }
+    setState(() {
+      canVis = true;
+    });
   }
 
   Future addColumn(String columnName) async {
-    if (columnName.contains('null')) {
-      return;
-    }
     await DatabaseHelper().addNewColumn(columnName);
   }
 
@@ -55,17 +62,20 @@ body: Container(
                           icon: Icon(Icons.access_time, size: 40.0,),
                           onPressed: () async {
                             picked = await _showTimePicker(context);
-                            await addColumn(newColumn);
                           },
                         ),
                       ),
                     SizedBox(height: 20.0),
                     Text(newColumn??'',),
                     SizedBox(height: 40.0),
-                    FlatButton.icon(onPressed: () {
+                    Visibility(
+                      visible: canVis,
+                      child: FlatButton.icon(onPressed: () async {
+                        await addColumn(newColumn);
 //                      Navigator.pushNamed(context, '/addstudents', );
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AddListOfStudents(columnName: newColumn,)));
-                    }, icon: Icon(Icons.navigate_next, color: Colors.blue,), label: Text('Student Attendence', style: TextStyle(color: Colors.blue)))
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AddListOfStudents(columnName: newColumn,)));
+                      }, icon: Icon(Icons.navigate_next, color: Colors.blue,), label: Text('Student Attendence', style: TextStyle(color: Colors.blue))),
+                    )
 
         ]
     )
@@ -154,20 +164,7 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
           if (snapshot.data.length < 1) {
             return Center(child: Text('Please Insert Students from the plus "+" button', style: TextStyle(color: Colors.blueGrey), ));
           } else {
-            return
-//                Container(
-//                child: Column(
-//                  children: <Widget>[
-//                    Center(
-//                      child: FlatButton.icon(
-//                        label: Text("Select Time"),
-//                        icon: Icon(Icons.input),
-//                        onPressed: () async {
-//                          await _showTimePicker(context);
-//                        },
-//                      ),
-//                    ),
-                  ListView.builder(
+            return ListView.builder(
                       itemCount: snapshot.data.length??0,
                       itemBuilder: (BuildContext context, int index) {
                         return Center(
@@ -278,6 +275,12 @@ class _AddStudentsInfoListState extends State<AddStudentsInfoList> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            Text('Beta version, Only works for one class, No matter what you\'re gonna type on Course Name. So ignore Course Name, Type any!!',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0
+              ),),
+            Divider(height: 20.0,),
             Text('Enter Course Name with Semester',
             style: TextStyle(
               color: Colors.black,
@@ -353,7 +356,13 @@ class _AttendedStudentClassState extends State<AttendedStudentClass> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
-        title: Text('Attendence Log'),
+        title: Text('Attendence Log',),
+        actions: <Widget>[
+          FlatButton.icon(onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ShowRollNo()));
+//            DatabaseHelper().getReportTillNow();
+          }, icon: Icon(Icons.account_circle, color: Colors.white,), label: Text('Report', style: TextStyle(color: Colors.white),))
+        ],
       ),
       body: Container(
         child: FutureBuilder(
