@@ -32,7 +32,7 @@ class _AddStudentsListToTheCourseState extends State<AddStudentsListToTheCourse>
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               SizedBox(height: 100.0,),
-              Text('Add Student Info', style: TextStyle(fontSize: 35.0, color: Colors.blue[900], fontWeight: FontWeight.bold),),
+              Text('Add All Students\' Info', style: TextStyle(fontSize: 27.0, color: Colors.blue[900], fontWeight: FontWeight.bold),),
               SizedBox(height: 50.0,),
               TextFormField(
                 controller: nameController,

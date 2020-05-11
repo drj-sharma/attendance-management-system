@@ -99,7 +99,7 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
 //  }
 
 
-  Future _getStudentsData() async {
+  Future<dynamic> _getStudentsData() async {
     return await DatabaseHelper().getStudents();
   }
   @override
@@ -134,9 +134,7 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
           children: <Widget>[
             IconButton(onPressed: () {
               return Navigator.push(context, MaterialPageRoute(builder: (context) => AddStudentsInfoList()));
-            }, icon: Icon(Icons.add),),IconButton(onPressed: () {
-
-            }, icon: Icon(Icons.account_circle),),
+            }, icon: Icon(Icons.add),),
             IconButton(
               icon: Icon(Icons.remove_red_eye),
                 onPressed: () {
@@ -146,15 +144,15 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
           ],
         ),
       ),
-      body: Container(
-        child: FutureBuilder(
-          future: _getStudentsData(),
-          // ignore: missing_return
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.data.length < 1) {
-              return Center(child: Text('Please Insert Students from the plus "+" button', style: TextStyle(color: Colors.blueGrey), ));
-            } else {
-              return
+      body: FutureBuilder(
+        initialData: [],
+        future: _getStudentsData(),
+        // ignore: missing_return
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.data.length < 1) {
+            return Center(child: Text('Please Insert Students from the plus "+" button', style: TextStyle(color: Colors.blueGrey), ));
+          } else {
+            return
 //                Container(
 //                child: Column(
 //                  children: <Widget>[
@@ -167,84 +165,84 @@ class _AddListOfStudentsState extends State<AddListOfStudents> {
 //                        },
 //                      ),
 //                    ),
-                    ListView.builder(
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Center(
+                  ListView.builder(
+                      itemCount: snapshot.data.length??0,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Center(
 //                      child: Text(snapshot.data[index].rollNo.toString()),
-                          child: ExpansionTile(
-                            title: Center(child: Text(snapshot.data[index].rollNo.toString())),
-                            subtitle: Center(child: Text(snapshot.data[index].name)),
-                            leading: Icon(Icons.power_input),
-                            backgroundColor: Colors.white,
-                            children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  FlatButton(
-                                    splashColor: Colors.blue[200],
-                                    color: Colors.green[400],
-                                    child: Text('Present', style: TextStyle(color: Colors.white),),
-                                    onPressed: () {
-                                      setState(() {
-                                        this.present = 1;
-                                        print(this.present);
-                                      });
+                        child: ExpansionTile(
+                          title: Center(child: Text(snapshot.data[index].rollNo.toString())),
+                          subtitle: Center(child: Text(snapshot.data[index].name)),
+                          leading: Icon(Icons.power_input),
+                          backgroundColor: Colors.white,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                FlatButton(
+                                  splashColor: Colors.blue[200],
+                                  color: Colors.green[400],
+                                  child: Text('Present', style: TextStyle(color: Colors.white),),
+                                  onPressed: () {
+                                    setState(() {
+                                      this.present = 1;
+                                      print(this.present);
+                                    });
 
-                                      AttendenceInterface attendence = AttendenceInterface(
-                                          rollNo: snapshot.data[index].rollNo,
-                                          attendence: present
-                                      );
-                                      DatabaseHelper().insertAndUpdateAttendence(attendence, widget.columnName).then((val) {
-                                        if (val.toString() != '404') {
-                                        }
+                                    AttendenceInterface attendence = AttendenceInterface(
+                                        rollNo: snapshot.data[index].rollNo,
+                                        attendence: present
+                                    );
+                                    DatabaseHelper().insertAndUpdateAttendence(attendence, widget.columnName).then((val) {
+                                      if (val.toString() != '404') {
+                                          print('404');
+                                      }
 //                                  else {
 //                                    print(student.rollNo);
 //                                    setState(() {
 //                                      rNo = 'Successfully added ' + student.rollNo.toString();
 //                                    });
 //                                  }
-                                      });
+                                    });
 
-                                    },
-                                  ),
-                                  FlatButton(
-                                    splashColor: Colors.blue[200],
-                                    color: Colors.red[400],
-                                    child: Text('Absent', style: TextStyle(color: Colors.white),),
-                                    onPressed: () {
-                                      setState(() {
-                                        this.present = 0;
-                                        print(this.present);
-                                      });
+                                  },
+                                ),
+                                FlatButton(
+                                  splashColor: Colors.blue[200],
+                                  color: Colors.red[400],
+                                  child: Text('Absent', style: TextStyle(color: Colors.white),),
+                                  onPressed: () {
+                                    setState(() {
+                                      this.present = 0;
+                                      print(this.present);
+                                    });
 
-                                      AttendenceInterface attendence = AttendenceInterface(
-                                          rollNo: snapshot.data[index].rollNo,
-                                          attendence: present
-                                      );
-                                      DatabaseHelper().insertAndUpdateAttendence(attendence, widget.columnName).then((val) {
-                                        if (val.toString() != '404') {
-                                        }
+                                    AttendenceInterface attendence = AttendenceInterface(
+                                        rollNo: snapshot.data[index].rollNo,
+                                        attendence: present
+                                    );
+                                    DatabaseHelper().insertAndUpdateAttendence(attendence, widget.columnName).then((val) {
+                                      if (val.toString() != '404') {
+                                      }
 //                                  else {
 //                                    print(student.rollNo);
 //                                    setState(() {
 //                                      rNo = 'Successfully added ' + student.rollNo.toString();
 //                                    });
 //                                  }
-                                      });
+                                    });
 
-                                    },
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                          );
-                    });
+                                  },
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                        );
+                  });
 
-            }
-          },
-        ),
+          }
+        },
       )
     );
   }
@@ -356,10 +354,10 @@ class _AttendedStudentClassState extends State<AttendedStudentClass> {
       ),
       body: Container(
         child: FutureBuilder(
+          initialData: [],
           future: _getStudentsAttendence(),
           // ignore: missing_return
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.data != null) {
               return ListView.builder(
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -389,9 +387,7 @@ class _AttendedStudentClassState extends State<AttendedStudentClass> {
 //                      ),
 //                    );
                   });
-            } else {
-              return Center(child: Text('Loading..'));
-            }
+
           },
         ),
       ),
