@@ -1,6 +1,6 @@
 # attendancemanagementsystem
 
-Mobile app to manage attendence of the students
+Mobile app to manage attendance of the students
 
 ## Getting Started
 
